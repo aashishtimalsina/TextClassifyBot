@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini AI - Text Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            <h1>Mini AI</h1>
+        </div>
+        <p>Text Classification with Custom AI Models</p>
+    </header>
+
+    <main class="container">
+        <section class="tabs">
+            <div class="tab-header">
+                <button class="tab-btn active" data-tab="predict">Predict</button>
+                <button class="tab-btn" data-tab="train">Train Model</button>
+                <button class="tab-btn" data-tab="experiment">Auto-Experiment</button>
+                <button class="tab-btn" data-tab="data">Dataset</button>
+                <button class="tab-btn" data-tab="metrics">Metrics</button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Prediction Tab -->
+                <div id="predict" class="tab-pane active">
+                    <h2>Text Classification</h2>
+                    <p>Enter text to classify as spam or not spam:</p>
+                    
+                    <form id="prediction-form" class="form-group">
+                        <div class="form-row">
+                            <label for="prediction-text">Message:</label>
+                            <textarea id="prediction-text" name="text" rows="4" placeholder="Enter the text message to analyze..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="prediction-model-type">Model Type:</label>
+                            <select id="prediction-model-type" name="model_type">
+                                <option value="custom">Custom Neural Network</option>
+                                <option value="simple">Simple Neural Network</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-check-circle"></i> Classify Text
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="prediction-result" class="result-box">
+                        <h3>Prediction Result</h3>
+                        <div id="prediction-message" class="message">
+                            <p>Submit a text above to see the prediction result.</p>
+                        </div>
+                        <div class="prediction-visualize">
+                            <div id="prediction-box" class="hidden">
+                                <div class="prediction-label"></div>
+                                <div class="confidence-meter">
+                                    <div class="meter-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Training Tab -->
+                <div id="train" class="tab-pane">
+                    <h2>Train New Model</h2>
+                    <p>Configure and train a new model with custom parameters:</p>
+                    
+                    <form id="training-form" class="form-group">
+                        <div class="form-row">
+                            <label for="training-model-type">Model Type:</label>
+                            <select id="training-model-type" name="model_type">
+                                <option value="custom">Custom Neural Network</option>
+                                <option value="simple">Simple Neural Network</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="training-epochs">Epochs:</label>
+                            <input type="number" id="training-epochs" name="epochs" min="1" value="5">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="training-batch-size">Batch Size:</label>
+                            <input type="number" id="training-batch-size" name="batch_size" min="1" value="32">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="training-hidden-layers">Hidden Layers (JSON array):</label>
+                            <input type="text" id="training-hidden-layers" name="hidden_layers" value="[64, 32]">
+                        </div>
+                        
+                        <div class="form-row">
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-cogs"></i> Train Model
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="training-result" class="result-box">
+                        <h3>Training Result</h3>
+                        <div id="training-message" class="message">
+                            <p>Start training to see results.</p>
+                        </div>
+                        <div id="training-metrics" class="metrics-container hidden">
+                            <div class="metric">
+                                <span class="metric-name">Accuracy:</span>
+                                <span class="metric-value accuracy">-</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-name">Precision:</span>
+                                <span class="metric-value precision">-</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-name">Recall:</span>
+                                <span class="metric-value recall">-</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-name">F1 Score:</span>
+                                <span class="metric-value f1_score">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Auto-Experiment Tab -->
+                <div id="experiment" class="tab-pane">
+                    <h2>Run Auto-Experiments</h2>
+                    <p>Run multiple experiments to find the best model configuration:</p>
+                    
+                    <form id="experiment-form" class="form-group">
+                        <div class="form-row checkbox-group">
+                            <label>Model Types:</label>
+                            <div class="checkboxes">
+                                <label><input type="checkbox" name="model_types[]" value="custom" checked> Custom Neural Network</label>
+                                <label><input type="checkbox" name="model_types[]" value="simple" checked> Simple Neural Network</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label>Epochs to Try:</label>
+                            <div class="tag-input">
+                                <input type="text" id="epoch-input" placeholder="Add a number...">
+                                <button type="button" id="add-epoch" class="btn secondary">Add</button>
+                            </div>
+                            <div id="epoch-tags" class="tags">
+                                <span class="tag">5<button class="remove-tag">×</button></span>
+                                <span class="tag">10<button class="remove-tag">×</button></span>
+                                <input type="hidden" name="epoch_options[]" value="5">
+                                <input type="hidden" name="epoch_options[]" value="10">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label>Batch Sizes to Try:</label>
+                            <div class="tag-input">
+                                <input type="text" id="batch-input" placeholder="Add a number...">
+                                <button type="button" id="add-batch" class="btn secondary">Add</button>
+                            </div>
+                            <div id="batch-tags" class="tags">
+                                <span class="tag">16<button class="remove-tag">×</button></span>
+                                <span class="tag">32<button class="remove-tag">×</button></span>
+                                <input type="hidden" name="batch_sizes[]" value="16">
+                                <input type="hidden" name="batch_sizes[]" value="32">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-flask"></i> Run Experiments
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="experiment-result" class="result-box">
+                        <h3>Experiment Results</h3>
+                        <div id="experiment-message" class="message">
+                            <p>Run experiments to see results.</p>
+                        </div>
+                        <div id="best-model" class="best-model hidden">
+                            <h4>Best Model Configuration</h4>
+                            <div class="model-details">
+                                <div class="detail">
+                                    <span class="detail-name">Model Type:</span>
+                                    <span class="detail-value model-type">-</span>
+                                </div>
+                                <div class="detail">
+                                    <span class="detail-name">Epochs:</span>
+                                    <span class="detail-value epochs">-</span>
+                                </div>
+                                <div class="detail">
+                                    <span class="detail-name">Batch Size:</span>
+                                    <span class="detail-value batch-size">-</span>
+                                </div>
+                                <div class="detail">
+                                    <span class="detail-name">Accuracy:</span>
+                                    <span class="detail-value accuracy">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dataset Tab -->
+                <div id="data" class="tab-pane">
+                    <h2>Sample Dataset</h2>
+                    <p>Preview of the training dataset:</p>
+                    
+                    <div class="data-container">
+                        <table id="data-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Message</th>
+                                    <th>Label</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be populated dynamically -->
+                                <tr>
+                                    <td colspan="2">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Metrics Tab -->
+                <div id="metrics" class="tab-pane">
+                    <h2>Model Metrics</h2>
+                    <p>Performance metrics of the latest trained model:</p>
+                    
+                    <div id="model-info" class="model-info">
+                        <div class="info-row">
+                            <span class="info-label">Model Type:</span>
+                            <span id="info-model-type" class="info-value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Trained On:</span>
+                            <span id="info-timestamp" class="info-value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Epochs:</span>
+                            <span id="info-epochs" class="info-value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Batch Size:</span>
+                            <span id="info-batch-size" class="info-value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-box">
+                            <canvas id="metrics-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-details">
+                        <h3>Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-title">Accuracy</div>
+                                <div id="metric-accuracy" class="metric-value">-</div>
+                                <div class="metric-desc">Proportion of correct predictions</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-title">Precision</div>
+                                <div id="metric-precision" class="metric-value">-</div>
+                                <div class="metric-desc">Proportion of true positives among positive predictions</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-title">Recall</div>
+                                <div id="metric-recall" class="metric-value">-</div>
+                                <div class="metric-desc">Proportion of true positives correctly identified</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-title">F1 Score</div>
+                                <div id="metric-f1" class="metric-value">-</div>
+                                <div class="metric-desc">Harmonic mean of precision and recall</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Mini AI Project &copy; 2025 | Text Classification with Custom Models and Automation</p>
+    </footer>
+
+    <div id="loading-overlay" class="loading hidden">
+        <div class="spinner"></div>
+        <p id="loading-message">Processing...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
