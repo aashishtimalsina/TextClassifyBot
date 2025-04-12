@@ -1,147 +1,109 @@
-# Mini AI Project: Text Classification with Automation
+# Mini AI - Text Classification Project
 
-A Python-based mini AI project for text classification with custom neural network models and automated training capabilities. This project implements a spam detection system that can be used as a foundation for other text classification tasks.
+## Overview
+Mini AI is a text classification project designed to classify text messages as SPAM or NOT SPAM using machine learning models. The project includes a backend for training and predicting with models, as well as a web-based frontend for user interaction.
 
 ## Features
-
-- Custom neural network model implementation for text classification
-- Text data processing pipeline with NLTK
-- Automated model training and evaluation
-- Experiment history tracking and visualization
-- Scheduled training and model monitoring
-- Simple and TensorFlow-based model implementations
+- Train custom neural network models for text classification.
+- Predict whether a message is SPAM or NOT SPAM.
+- Visualize model metrics and experiment results.
+- Auto-experimentation to find the best model configuration.
+- Web-based user interface built with Flask.
 
 ## Project Structure
-
 ```
-MINI_AI/
-├── data/               # Data storage directory
-├── models/             # Trained models and experiment history
-├── src/                # Source code
-│   ├── __init__.py
-│   ├── automator.py    # Automation and scheduling
-│   ├── data_processor.py # Data loading and preprocessing
-│   ├── model.py        # Model implementations
-│   └── trainer.py      # Model training utilities
-└── requirements.txt    # Project dependencies
+Mini_AI/
+├── automator.log                # Log file for automation processes
+├── README.md                    # Project documentation
+├── requirements.txt             # Python dependencies
+├── data/                        # Dataset folder
+│   └── sample_spam_data.csv     # Sample dataset for training
+├── models/                      # Trained models and metrics
+│   ├── classifier_params.pkl    # Model parameters
+│   ├── experiment_history.csv   # Experiment history (CSV)
+│   ├── experiment_history.pkl   # Experiment history (Pickle)
+│   ├── metrics.pkl              # Model metrics
+│   ├── text_classifier.h5       # Trained model file
+│   └── vectorizer.pkl           # Text vectorizer
+├── src/                         # Source code for backend
+│   ├── __init__.py              # Package initializer
+│   ├── automator.py             # Automation script
+│   ├── data_processor.py        # Data processing utilities
+│   ├── model.py                 # Model definitions
+│   ├── trainer.py               # Model training utilities
+│   └── __pycache__/             # Compiled Python files
+├── web/                         # Web interface
+│   ├── app.py                   # Flask application
+│   ├── static/                  # Static files (CSS, JS, images)
+│   │   ├── css/
+│   │   │   └── style.css        # Stylesheet
+│   │   ├── images/              # Placeholder for images
+│   │   └── js/
+│   │       └── script.js        # JavaScript for frontend
+│   └── templates/               # HTML templates
+│       └── index.html           # Main HTML template
 ```
 
 ## Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd Mini_AI
+   ```
 
-1. Clone the repository
-2. Install the required dependencies:
+2. Create a virtual environment and activate it:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
+### Running the Backend
+1. Navigate to the `web` directory:
+   ```bash
+   cd web
+   ```
 
-### Quick Start
+2. Start the Flask application:
+   ```bash
+   python -m web.app
+   ```
 
-Run the automator script to train a model and make predictions:
+3. Open your browser and go to `http://127.0.0.1:5000` to access the web interface.
 
-```bash
-cd src
-python automator.py
-```
+### Training a Model
+- Use the "Train Model" tab in the web interface to configure and train a new model.
 
-This will:
-1. Create a sample dataset (spam vs. non-spam messages)
-2. Train a custom neural network model
-3. Make predictions on example texts
+### Making Predictions
+- Use the "Predict" tab in the web interface to classify text messages as SPAM or NOT SPAM.
 
-### Custom Training
+### Viewing Metrics
+- Use the "Metrics" tab to view the performance metrics of the latest trained model.
 
-```python
-from src.automator import Automator
+### Running Auto-Experiments
+- Use the "Auto-Experiment" tab to run multiple experiments and find the best model configuration.
 
-# Initialize the automator
-automator = Automator()
-
-# Train with custom parameters
-model, metrics = automator.train_model(
-    model_type='custom',  # 'custom' or 'simple'
-    epochs=20,
-    batch_size=32,
-    hyperparams={'hidden_layers': [128, 64, 32]}
-)
-
-# Make predictions
-texts = [
-    "Meeting scheduled for tomorrow at 10 AM",
-    "URGENT: You've won a prize! Click here to claim"
-]
-predictions = automator.predict_batch(texts)
-```
-
-### Automated Experimentation
-
-To find the best model configuration:
-
-```python
-# Run experiments with different parameters
-best_model = automator.auto_experiment(
-    model_types=['custom', 'simple'],
-    epoch_options=[5, 10, 20],
-    batch_sizes=[16, 32, 64]
-)
-
-# Plot experiment history
-automator.plot_experiment_history(metric='accuracy')
-```
-
-### Scheduling Training Jobs
-
-```python
-# Schedule daily training
-job_id = automator.schedule_training(
-    interval='daily',
-    time='02:00',
-    epochs=10,
-    batch_size=32
-)
-
-# Run the scheduler (blocking)
-automator.run_scheduler()
-
-# Or run non-blocking
-automator.run_scheduler(blocking=False)
-```
-
-## Models
-
-### CustomTextClassifier
-
-A neural network model built with TensorFlow/Keras for text classification:
-- Accepts TF-IDF features as input
-- Configurable hidden layers and dropout
-- Binary classification output
-
-### SimpleTextClassifierNN
-
-A simpler neural network implementation:
-- Pure NumPy implementation (no TensorFlow required)
-- Single hidden layer with ReLU activation
-- Sigmoid output layer for binary classification
-
-## Data Processing
-
-The `DataProcessor` class handles:
-- Text cleaning and normalization
-- Stopword removal and lemmatization
-- TF-IDF vectorization
-- Train/test splitting
-
-## Customization
-
-The project can be extended for different text classification tasks by:
-
-1. Providing custom datasets with text and label columns
-2. Adjusting the preprocessing pipeline in `data_processor.py`
-3. Modifying the model architecture in `model.py`
-4. Using the automation tools in `automator.py` to find optimal configurations
+## Dependencies
+- Python 3.8+
+- Flask
+- TensorFlow
+- NLTK
+- Pandas
+- NumPy
+- Matplotlib
+- scikit-learn
 
 ## License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-MIT# TextClassifyBot
+## Acknowledgments
+- [Flask](https://flask.palletsprojects.com/)
+- [TensorFlow](https://www.tensorflow.org/)
+- [NLTK](https://www.nltk.org/)
+- [scikit-learn](https://scikit-learn.org/)
+# TextClassifyBot
